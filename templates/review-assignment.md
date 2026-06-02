@@ -37,13 +37,18 @@
    - Profiles/systems to sync: \_\_\_\_\_
    - Sync status: \_\_\_\_\_
 
+5. [ ] **CC-0 Channel verified?** (cross-agent deliveries only)
+   - Delivery channel: \_\_\_\_\_
+   - Target read mechanism confirmed: \_\_\_\_\_
+   - CADVP report attached: Yes / No / N/A
+
 ---
 
 ## Review Evidence
 
-\`\`\`
+```
 [verification command output]
-\`\`\`
+```
 
 ---
 

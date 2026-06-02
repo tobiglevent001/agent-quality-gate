@@ -13,19 +13,29 @@
 
 ---
 
+## CC-0 Channel Verification (if cross-agent delivery)
+
+| Field | Value |
+|-------|-------|
+| **Delivery channel** | A (direct DB) / B (target self-write) / C (cron — blocked) |
+| **Target read mechanism** | |
+| **Channel available at target** | Yes / No |
+
+---
+
 ## 1. Before State
 
-\`\`\`
+```
 [Optional: snapshot of state before operation]
-\`\`\`
+```
 
 ---
 
 ## 2. Operation Execution
 
-\`\`\`
+```
 [Command / API request / file content]
-\`\`\`
+```
 
 ---
 
@@ -40,34 +50,41 @@
 
 ### 3.2 Content Verification
 
-\`\`\`
+```
 [head / grep output]
-\`\`\`
+```
 
 ### 3.3 Syntax Check (if applicable)
 
-\`\`\`
+```
 [syntax check output]
-\`\`\`
+```
 
 ### 3.4 Cross-System Verification (if applicable)
 
-\`\`\`
+```
 [target system confirmation]
-\`\`\`
+```
+
+### 3.5 CADVP Verification (if cross-agent delivery)
+
+```
+[cadvp-verify.py output or summary]
+```
 
 ---
 
 ## 4. After State
 
-\`\`\`
+```
 [verification result after operation]
-\`\`\`
+```
 
 ---
 
 ## 5. Gate Status
 
+- CC-0 Channel: ✅ Pass / ❌ Blocked / ➖ N/A
 - L1 Self-Verify: ✅ Pass / ❌ Fail
 - L2 Evidence: ✅ Report attached
 - L3 Review: 🔄 Assigned / ➖ Not required

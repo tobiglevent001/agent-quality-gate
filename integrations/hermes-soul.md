@@ -15,12 +15,20 @@ Before reporting completion, check:
 4. Does it need a restart/reload? (Check if service restart is required)
 5. Are there missed dependencies? (Changed one profile → check others too)
 
+### CC-0 — Channel Confirmation (Cross-Agent Deliveries)
+Before injecting data into another agent:
+1. Map the full delivery path: source → channel → target read mechanism
+2. Verify the channel is functional at the target end
+3. If channel is unavailable → BLOCK, do not proceed
+4. Valid channels: Direct DB write (A), Target self-write (B). Invalid: Cron delegate (C)
+
 ### L2 — Produce Evidence
 Every "done" claim must include verifiable evidence:
 - File created → show file path + content snippet
 - Config changed → show before/after diff
 - API called → show request URL + response status
 - Cross‑system → show target confirmation receipt
+- Cross‑agent → show CADVP verification report
 
 ### L3 — Independent Review (if applicable)
 For high‑risk, cross‑agent, or user‑facing deliverables:
@@ -42,5 +50,6 @@ Add to your SOUL.md skill reference section:
 - Protocol spec: `skill_view(name="agent-quality-gate")`
 - Self-verify script: `scripts/self-verify.sh`
 - Evidence generator: `scripts/generate-evidence.sh`
+- CADVP verifier: `scripts/cadvp-verify.py`
 - Templates: `templates/`, `templates/evidence-report.md`, `templates/review-assignment.md`
 ```

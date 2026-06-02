@@ -53,11 +53,11 @@ Evidence: /path/to/config.yaml exists (284 bytes), key fields confirmed.
 ```bash
 # Check each file
 grep "memory_char_limit" ~/.hermes/config.yaml      # → 15000 ✅
-grep "memory_char_limit" ~/profiles/dev-pony/config.yaml  # → 15000 ✅
-grep "memory_char_limit" ~/profiles/marketing-pony/config.yaml  # → 15000 ✅
+grep "memory_char_limit" ~/profiles/dev-agent/config.yaml  # → 15000 ✅
+grep "memory_char_limit" ~/profiles/marketing-agent/config.yaml  # → 15000 ✅
 
 # Check dependencies
-# (profiles/kehu-tuozhan-xiaoqi and laiven-assistant inherit from default)
+# (profiles inherit from default)
 ```
 
 ### Step 2 — L2 Produce Evidence:
@@ -122,4 +122,65 @@ Profile B agent: "Can access /path/to/target.md from my context."
 ✅ Done. Cross-profile write verified from both sides.
 Evidence: source + target path confirmed.
 Review: Profile B agent confirmed access.
+```
+
+---
+
+## Example 4: Cross-Agent Knowledge Injection (CADVP v1.1)
+
+**Scenario:** Coordinator agent injects business knowledge into a sub-agent's memory system.
+
+### Step 0 — CC-0 Channel Confirmation:
+```
+Data path: Coordinator → SQLite INSERT → Target's memory_store.db → holographic provider → context injection
+
+Channel analysis:
+  A. Direct DB write (SQLite INSERT) → ✅ Available (target has holographic enabled, DB exists)
+  B. Target self-write (memory tool) → ✅ Available (but requires target session)
+  C. Cron delegate → ❌ Not available (leaf agent lacks memory tool)
+
+Decision: Use Channel A.
+```
+
+### Step 1 — Inject via Direct DB Write:
+```bash
+DB=~/.hermes/profiles/assistant-profile/memory_store.db
+sqlite3 "$DB" "INSERT INTO facts (content, category) VALUES ('Business rule: ...', 'memory');"
+```
+
+### Step 2 — Run CADVP Verification:
+```bash
+python3 scripts/cadvp-verify.py assistant-profile
+```
+
+### Step 3 — Review CADVP Output:
+```
+✅ [CC-0] Channel Confirmation: PASS — Channel A available
+✅ [PC-1] Target Identity: PASS — profile exists, gateway online
+✅ [PC-2] Data Channel Mapping: PASS — holographic enabled, DB exists
+✅ [WV-1] Data Write: PASS — facts table has 15 records
+✅ [WV-2] Content Integrity: PASS — content verified
+✅ [RV-1] Config Activation: PASS — provider=holographic, enabled=true
+✅ [RV-2] Runtime Load: PASS — memory_banks populated
+✅ [RV-3] Tool Reachability: PASS — FTS search matched
+✅ [RV-4] User Perception: PASS — gateway online
+✅ [GR-1] Dependency Impact: PASS
+✅ [GR-2] Documentation: PASS
+
+Total: 13 PASS / 0 FAIL
+✅ All passed — delivery ready
+```
+
+**Final Report:**
+```
+✅ Done. Knowledge injected via Channel A (direct DB write).
+CADVP: 13/13 dimensions passed. Delivery chain verified end-to-end.
+```
+
+### What If Channel C Was Used (Failure Example):
+```
+Coordinator created cron job to run memory() in target profile.
+CC-0 check: ❌ FAIL — cron leaf agent has no memory tool.
+Result: Data never reached target's memory system.
+Fix: Switch to Channel A (direct SQLite INSERT).
 ```
