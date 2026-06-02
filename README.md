@@ -1,5 +1,9 @@
 # Agent Quality Gate Protocol 🚧✅
 
+[![CI](https://github.com/tobiglevent001/agent-quality-gate/actions/workflows/ci.yaml/badge.svg)](https://github.com/tobiglevent001/agent-quality-gate/actions/workflows/ci.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)]()
+
 **A three-level completion verification framework for AI agents — now with CADVP v1.1 cross-agent delivery verification.**
 
 Every agent says "done" — but is it really done? The Agent Quality Gate Protocol defines a repeatable, auditable process for agents to self-verify before reporting completion.

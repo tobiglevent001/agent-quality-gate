@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Lint — scripts
+        run: |
+          python -m py_compile scripts/cadvp-verify.py
+          python -m py_compile scripts/self-verify.sh || true  # bash scripts skipped
+          python -m py_compile scripts/generate-evidence.sh || true
+
+      - name: Lint — YAML frontmatter check
+        run: |
+          python -c "
+          import os, yaml
+          for root, dirs, files in os.walk('.'):
+              for f in files:
+                  if f.endswith('.md'):
+                      path = os.path.join(root, f)
+                      with open(path) as fh:
+                          content = fh.read()
+                      if content.startswith('---'):
+                          end = content.find('---', 3)
+                          if end > 0:
+                              try:
+                                  yaml.safe_load(content[3:end])
+                                  print(f'  ✅ {path}')
+                              except Exception as e:
+                                  print(f'  ❌ {path}: {e}')
+                                  raise
+          "
+
+      - name: Validate — Markdown links
+        run: |
+          python -c "
+          import re, os
+          errors = 0
+          for root, dirs, files in os.walk('.'):
+              for f in files:
+                  if f.endswith('.md') and '.git' not in root:
+                      path = os.path.join(root, f)
+                      with open(path) as fh:
+                          for i, line in enumerate(fh, 1):
+                              for m in re.finditer(r'\[.*?\]\((.*?)\)', line):
+                                  url = m.group(1)
+                                  if url.startswith('http'):
+                                      continue  # skip external links
+                                  target = os.path.normpath(os.path.join(os.path.dirname(path), url))
+                                  if not os.path.exists(target):
+                                      print(f'  Broken link: {path}:{i} -> {url}')
+                                      errors += 1
+          if errors:
+              exit(1)
+          print('✅ All internal links valid')
+          "
+
+      - name: Validate — no sensitive content
+        run: |
+          ! grep -r --include="*.md" --include="*.py" --include="*.yaml" --include="*.sh" \
+            -E '(qijing|laiven|kehu|pony|FDE|淇经|来文)' . 2>/dev/null | grep -v '.git/' | grep -v node_modules
+          echo "✅ No sensitive content detected"
